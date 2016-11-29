@@ -35,6 +35,8 @@ const (
 	DATETIME = time.RFC3339Nano // Format for EXT-X-PROGRAM-DATE-TIME defined in section 3.4.5
 )
 
+var ProgramTimeFormat string = DATETIME // Allow user to customize format of EXT-X-PROGRAM-DATE-TIME
+
 type ListType uint
 
 const (
