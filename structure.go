@@ -36,7 +36,7 @@ const (
 )
 
 var ProgramTimeFormat string = DATETIME // Allow user to customize format of EXT-X-PROGRAM-DATE-TIME
-
+var ProgramTimeLocation *time.Location = time.UTC
 type ListType uint
 
 const (
