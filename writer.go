@@ -513,7 +513,7 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 		}
 		if !seg.ProgramDateTime.IsZero() {
 			p.buf.WriteString("#EXT-X-PROGRAM-DATE-TIME:")
-			p.buf.WriteString(seg.ProgramDateTime.Format(DATETIME))
+			p.buf.WriteString(seg.ProgramDateTime.Format(ProgramTimeFormat))
 			p.buf.WriteRune('\n')
 		}
 		if seg.Limit > 0 {
