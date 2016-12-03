@@ -496,8 +496,10 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 	case !state.tagProgramDateTime && strings.HasPrefix(line, "#EXT-X-PROGRAM-DATE-TIME:"):
 		state.tagProgramDateTime = true
 		state.listType = MEDIA
-		if state.programDateTime, err = time.ParseInLocation(ProgramTimeFormat, line[25:], ProgramTimeLocation); strict && err != nil {
+		if state.programDateTime, err = time.Parse(ProgramTimeFormat, line[25:]); strict && err != nil {
 			return err
+		}else if state.programDateTime.Location() != ProgramTimeLocation{
+			state.programDateTime = state.programDateTime.In(ProgramTimeLocation)
 		}
 	case !state.tagRange && strings.HasPrefix(line, "#EXT-X-BYTERANGE:"):
 		state.tagRange = true
