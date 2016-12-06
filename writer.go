@@ -706,3 +706,14 @@ func (p *MediaPlaylist) SetWinSize(winsize uint) error {
 	p.winsize = winsize
 	return nil
 }
+
+// SetCapacity resize the capacity of playlist's segments slice.
+func (p *MediaPlaylist) SetCapacity(capacity uint) error {
+	if capacity <= p.capacity {
+		return errors.New("new capacity must be greater than the original one.")
+	}
+	p.Segments = append(p.Segments, make([]*MediaSegment, capacity - p.capacity)...)
+	p.capacity = capacity
+	p.tail = p.head + p.count
+	return nil
+}
