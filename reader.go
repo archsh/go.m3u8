@@ -348,16 +348,19 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 		state.tagInf = true
 		state.listType = MEDIA
 		sepIndex := strings.Index(line, ",")
+		var duration string
 		if sepIndex == -1 {
-			break
+			duration = line[8:]
+		}else{
+			duration = line[8:sepIndex]
 		}
-		duration := line[8:sepIndex]
+
 		if len(duration) > 0 {
 			if state.duration, err = strconv.ParseFloat(duration, 64); strict && err != nil {
 				return fmt.Errorf("Duration parsing error: %s", err)
 			}
 		}
-		if len(line) > sepIndex {
+		if sepIndex > 0 && len(line) > sepIndex {
 			state.title = line[sepIndex+1:]
 		}
 	case !strings.HasPrefix(line, "#"):
