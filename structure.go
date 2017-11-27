@@ -35,8 +35,6 @@ const (
 	DATETIME = time.RFC3339Nano // Format for EXT-X-PROGRAM-DATE-TIME defined in section 3.4.5
 )
 
-var ProgramTimeFormat string = DATETIME // Allow user to customize format of EXT-X-PROGRAM-DATE-TIME
-var ProgramTimeLocation *time.Location = time.UTC
 type ListType uint
 
 const (
@@ -102,6 +100,8 @@ type MediaPlaylist struct {
 	Key            *Key // EXT-X-KEY is optional encryption key displayed before any segments (default key for the playlist)
 	Map            *Map // EXT-X-MAP is optional tag specifies how to obtain the Media Initialization Section (default map for the playlist)
 	WV             *WV  // Widevine related tags outside of M3U8 specs
+	ProgramTimeFormat string //= DATETIME // Allow user to customize format of EXT-X-PROGRAM-DATE-TIME
+	ProgramTimeLocation *time.Location //= time.UTC
 }
 
 /*

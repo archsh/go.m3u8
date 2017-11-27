@@ -113,22 +113,22 @@ func (p *MediaPlaylist) decode(buf *bytes.Buffer, strict bool) error {
 }
 
 // Detect playlist type and decode it from the buffer.
-func Decode(data bytes.Buffer, strict bool) (Playlist, ListType, error) {
-	return decode(&data, strict)
+func Decode(data bytes.Buffer, strict bool, timeformat string, timezone *time.Location) (Playlist, ListType, error) {
+	return decode(&data, strict,timeformat,timezone)
 }
 
 // Detect playlist type and decode it from input stream.
-func DecodeFrom(reader io.Reader, strict bool) (Playlist, ListType, error) {
+func DecodeFrom(reader io.Reader, strict bool, timeformat string, timezone *time.Location) (Playlist, ListType, error) {
 	buf := new(bytes.Buffer)
 	_, err := buf.ReadFrom(reader)
 	if err != nil {
 		return nil, 0, err
 	}
-	return decode(buf, strict)
+	return decode(buf, strict,timeformat,timezone)
 }
 
 // Detect playlist type and decode it. May be used as decoder for both master and media playlists.
-func decode(buf *bytes.Buffer, strict bool) (Playlist, ListType, error) {
+func decode(buf *bytes.Buffer, strict bool, timeformat string, timezone *time.Location) (Playlist, ListType, error) {
 	var eof bool
 	var line string
 	var master *MasterPlaylist
@@ -144,6 +144,14 @@ func decode(buf *bytes.Buffer, strict bool) (Playlist, ListType, error) {
 	if err != nil {
 		return nil, 0, fmt.Errorf("Create media playlist failed: %s", err)
 	}
+	if timeformat == "" {
+		timeformat = DATETIME
+	}
+	if nil == timezone {
+		timezone = time.UTC
+	}
+	media.ProgramTimeFormat = timeformat
+	media.ProgramTimeLocation = timezone
 
 	for !eof {
 		if line, err = buf.ReadString('\n'); err == io.EOF {
@@ -499,10 +507,10 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 	case !state.tagProgramDateTime && strings.HasPrefix(line, "#EXT-X-PROGRAM-DATE-TIME:"):
 		state.tagProgramDateTime = true
 		state.listType = MEDIA
-		if state.programDateTime, err = time.Parse(ProgramTimeFormat, line[25:]); strict && err != nil {
+		if state.programDateTime, err = time.Parse(p.ProgramTimeFormat, line[25:]); strict && err != nil {
 			return err
-		}else if state.programDateTime.Location() != ProgramTimeLocation{
-			state.programDateTime = state.programDateTime.In(ProgramTimeLocation)
+		}else if state.programDateTime.Location() != p.ProgramTimeLocation{
+			state.programDateTime = state.programDateTime.In(p.ProgramTimeLocation)
 		}
 	case !state.tagRange && strings.HasPrefix(line, "#EXT-X-BYTERANGE:"):
 		state.tagRange = true

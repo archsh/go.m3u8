@@ -245,6 +245,8 @@ func NewMediaPlaylist(winsize uint, capacity uint) (*MediaPlaylist, error) {
 	p := new(MediaPlaylist)
 	p.ver = minver
 	p.capacity = capacity
+	p.ProgramTimeFormat = DATETIME
+	p.ProgramTimeLocation = time.UTC
 	if err := p.SetWinSize(winsize); err != nil {
 		return nil, err
 	}
@@ -513,7 +515,7 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 		}
 		if !seg.ProgramDateTime.IsZero() {
 			p.buf.WriteString("#EXT-X-PROGRAM-DATE-TIME:")
-			p.buf.WriteString(seg.ProgramDateTime.Format(ProgramTimeFormat))
+			p.buf.WriteString(seg.ProgramDateTime.Format(p.ProgramTimeFormat))
 			p.buf.WriteRune('\n')
 		}
 		if seg.Limit > 0 {
